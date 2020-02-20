@@ -1,15 +1,15 @@
-/*!
- * \file optionFileParser.cpp
- * \author Herwig Letofsky
- * \brief this app parses an option file for the keys supplied, which are
+/**
+ * @file option_file_parser.cpp
+ * @author Herwig Letofsky
+ * @brief this app parses an option file for the keys supplied, which are
  * specified as command line arguments. The parsed file needs to fullfill the
  * following criteras.
  *  - One Key-Value pair per line
  *  - Key and Value are seperated by an equal sign with no spaces
  *    e.g: "<key>=<value>"
  *
- * \version 0.1
- * \date 2020-02-17
+ * @version 0.1
+ * @date 2020-02-17
  *
  * @copyright Copyright (c) 2020
  *
