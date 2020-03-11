@@ -23,6 +23,7 @@
 #include <map>
 #include <memory>
 #include <vector>
+#include <regex>
 
 #define APP_NAME "[OptionFileParser] "
 
@@ -40,6 +41,19 @@ void print_help() {
             << "  -r <key>             read value of <key>\n"
             << "  -d <key>             delete key-value pair\n";
 }
+
+inline std::string ltrim(const std::string& s) {
+	return std::regex_replace(s, std::regex("^\\s+"), std::string(""));
+}
+
+inline std::string rtrim(const std::string& s) {
+	return std::regex_replace(s, std::regex("\\s+$"), std::string(""));
+}
+
+inline std::string trim(const std::string& s) {
+	return ltrim(rtrim(s));
+}
+
 
 int main(int argc, char* argv[]) {
   if (argc < 2) {
@@ -120,7 +134,7 @@ int main(int argc, char* argv[]) {
 
     if (mode == ModifyKeysMode::read || mode == ModifyKeysMode::remove) {
       if (eq_pos == std::string::npos) {
-        keysToReadOrDelete.emplace_back(std::move(arg));
+        keysToReadOrDelete.emplace_back(trim(arg));
       } else {
         std::cerr << "Wrong format of options - Expected <key> | Got '" << arg
                   << "'" << std::endl;
@@ -130,8 +144,8 @@ int main(int argc, char* argv[]) {
     } else if (mode == ModifyKeysMode::write) {
       if (eq_pos != std::string::npos && eq_pos > 0 &&
           eq_pos < arg.size() - 1) {
-        keysToWrite.emplace_back(arg.substr(0, eq_pos),
-                                 arg.substr(eq_pos + 1, arg.size()));
+        keysToWrite.emplace_back(trim(arg.substr(0, eq_pos)),
+                                 trim(arg.substr(eq_pos + 1, arg.size())));
       } else {
         std::cerr << "Wrong format to set key - Expected <key>=<value> | Got '"
                   << arg << "'" << std::endl;
@@ -180,7 +194,7 @@ int main(int argc, char* argv[]) {
   auto lineHasKey = [](std::string& line, std::string& key) {
     std::size_t eq_pos = line.find_first_of("=", 0);
     if (eq_pos != std::string::npos && eq_pos > 0 && eq_pos < line.size() - 1) {
-      if (line.substr(0, eq_pos) == key) {
+      if (trim(line.substr(0, eq_pos)) == key) {
         return eq_pos;
       }
     }
@@ -200,7 +214,7 @@ int main(int argc, char* argv[]) {
           std::size_t eq_pos = lineHasKey(input_line, key);
           if (eq_pos != std::string::npos) {
             keyValueMap.emplace(
-                key, input_line.substr(eq_pos + 1, input_line.size()));
+                key, trim(input_line.substr(eq_pos + 1, input_line.size())));
           }
         }
       }
